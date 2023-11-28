@@ -1,59 +1,47 @@
 import tkinter as tk
-from tkinter import messagebox
-from sqrEq import sqrEquation
+import random
+from PIL import Image, ImageTk
+
+def generate_key(input_word):
+    letters_part = input_word[:3].upper()
+    numbers_part = ''.join(str(ord(char) - 64) for char in letters_part)
+    numbers_part = ''.join(num.lstrip('0') for num in numbers_part)  
+
+    
+    generated_key = f"{letters_part}-{numbers_part}-{letters_part}"
+    return generated_key
 
 
-def close():
-    window.destroy()
+root = tk.Tk()
+root.title("Keygen")
+
+canvas = tk.Canvas(root, width=400, height=300)
+canvas.grid(row=0, column=0, columnspan=2)
 
 
-def calc():
-    A = float(arg_A.get())
-    B = float(arg_B.get())
-    C = float(arg_C.get())
-    if A == 0.0:
-        tk.messagebox.showwarning('Error', 'Division by zero!')
-    else:
-        lbl_result.configure(text=sqrEquation(A, B, C))
+background_img = Image.open("chess_bg.jpg")
+background_img = background_img.resize((400, 300)) 
+background_img = ImageTk.PhotoImage(background_img)
+canvas.create_image(0, 0, anchor="nw", image=background_img)
+
+input_word_entry = tk.Entry(root)
+input_word_label = tk.Label(root, text="Введите 6-ти буквенное слово:")
+generate_key_button = tk.Button(root, text="Генерировать ключ")
+generated_key_label = tk.Label(root, text="Сгенерированный ключ:")
 
 
-window = tk.Tk()
-window.geometry('576x360')
-bg_img = tk.PhotoImage(file='bg_pic.png')
-
-lbl_bg = tk.Label(window, image=bg_img)
-lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
-
-frame = tk.Frame(window)
-frame.place(relx=0.5, rely=0.5, anchor='center')
-
-lbl_A = tk.Label(frame, text='A', font=('Arial', 30), bg='blue', fg='white')
-lbl_A.grid(column=0, row=0, padx=10, pady=15)
-arg_A = tk.Entry(frame, width=10)
-arg_A.insert(0, '1')
-arg_A.grid(column=0, row=1, padx=10, pady=15)
-
-lbl_B = tk.Label(frame, text='B', font=('Arial', 30))
-lbl_B.grid(column=1, row=0, padx=10, pady=15)
-arg_B = tk.Entry(frame, width=10)
-arg_B.insert(0, '0')
-arg_B.grid(column=1, row=1, padx=10, pady=15)
-
-lbl_C = tk.Label(frame, text='C', font=('Arial', 30))
-lbl_C.grid(column=2, row=0, padx=10, pady=15)
-arg_C = tk.Entry(frame, width=10)
-arg_C.insert(0, '0')
-arg_C.grid(column=2, row=1, padx=10, pady=15)
-
-lbl_roots = tk.Label(frame, text='Result:')
-lbl_roots.grid(column=1, row=2)
-lbl_result = tk.Label(frame, text='None yet.', font=('Arial', 10))
-lbl_result.grid(column=2, row=2)
-
-btn_calc = tk.Button(frame, text='Calculate', command=calc)
-btn_calc.grid(column=0, row=3, padx=10, pady=15)
-btn_exit = tk.Button(frame, text='Cancel', command=close)
-btn_exit.grid(column=2, row=3, padx=10, pady=15)
+input_word_label.grid(row=0, column=0)
+input_word_entry.grid(row=0, column=1)
+generate_key_button.grid(row=1, column=0, columnspan=2)
+generated_key_label.grid(row=2, column=0, columnspan=2)
 
 
-window.mainloop()
+def on_generate_key_button_click():
+    input_word = input_word_entry.get()
+    generated_key = generate_key(input_word)
+    generated_key_label.config(text="Generated Key: " + generated_key)
+
+
+generate_key_button.config(command=on_generate_key_button_click)
+
+root.mainloop()
